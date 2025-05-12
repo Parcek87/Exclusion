@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Conexión en Bucaramanga</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; }
+        .legend { background: white; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Encabezado -->
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">Mapa de Conexión en Bucaramanga</h1>
+            <p class="mt-2">Encuentra Wi-Fi gratuito y espacios de coworking</p>
+        </div>
+    </header>
+
+    <!-- Sección del Mapa -->
+    <section class="container mx-auto py-12">
+        <h2 class="text-2xl font-semibold text-center mb-6">Explora Lugares con Internet</h2>
+        <div id="map" class="rounded-lg shadow-lg"></div>
+        <div class="mt-4 text-center">
+            <p class="text-gray-700">Haz clic en los marcadores para ver detalles de cada ubicación. Los íconos azules indican Wi-Fi gratuito (parques, plazas, cafés), y los rojos indican coworking de pago.</p>
+        </div>
+    </section>
+
+    <!-- Sección de Información -->
+    <section class="bg-gray-200 py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-semibold text-center mb-6">Puntos Wi Fi</h2>
+            <p class="text-gray-700 text-center max-w-2xl mx-auto">
+                Este mapa muestra puntos de conexión a internet en Bucaramanga, incluyendo parques, plazas y calles con Wi-Fi gratuito, así como espacios de coworking de pago.
+            </p>
+        </div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 Mapa de Conexión Bucaramanga. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Inicializar el mapa centrado en Bucaramanga
+        var map = L.map('map').setView([7.1193, -73.1227], 13);
+
+        // Añadir capa de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Iconos personalizados
+        var wifiIcon = L.icon({
+            iconUrl: 'https://img.icons8.com/color/48/000000/wifi.png',
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38]
+        });
+
+        var coworkingIcon = L.icon({
+            iconUrl: 'https://img.icons8.com/color/48/000000/office.png',
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38]
+        });
+
+        // Lugares con Wi-Fi gratuito (parques, plazas, cafés, calles)
+        var wifiSpots = [
+            { name: "Parque Santander", coords: [7.1196425, -73.1228599], details: "Wi-Fi gratuito por Telebucaramanga" },
+            { name: "Parque de los Niños", coords: [7.1252037, -73.1190775], details: "Wi-Fi gratuito, ideal para familias" },
+            { name: "Parque San Pío", coords: [7.1185337, -73.1103612], details: "Wi-Fi gratuito cerca de CC Cacique" },
+            { name: "Parque del Agua", coords: [7.1303994, -73.1095323], details: "Wi-Fi gratuito, entorno natural" },
+            { name: "Parque Ecológico La Flora", coords: [7.1080298, -73.107635], details: "Wi-Fi gratuito, senderos verdes" },
+            { name: "Parque de los Sueños", coords: [7.1061384, -73.1215738], details: "Wi-Fi gratuito, eventos culturales" },
+            { name: "Parque García Rovira", coords: [7.1169613, -73.1300846], details: "Wi-Fi gratuito, zona histórica" },
+            { name: "Parque Centenario", coords: [7.1218808, -73.1246084], details: "Wi-Fi gratuito, centro de la ciudad" },
+            { name: "Parque Las Cigarras", coords: [7.1037552, -73.1212597], details: "Wi-Fi gratuito, tranquilo" },
+            { name: "Parque La Concordia", coords: [7.113593, -73.1182716], details: "Wi-Fi gratuito, cerca de zonas comerciales" },
+            { name: "Juan Valdez Cabecera", coords: [7.1149816, -73.1087979], details: "Wi-Fi gratuito en cafetería" },
+            { name: "Starbucks Cacique", coords: [7.0996599, -73.107375], details: "Wi-Fi gratuito, dentro de CC Cacique" },
+            { name: "Plaza Luis Carlos Galán", coords: [7.117481, -73.1293992], details: "Wi-Fi gratuito, área cívica" },
+            { name: "Parque Antonia Santos", coords: [7.1225858, -73.1221491], details: "Wi-Fi gratuito, espacio recreativo" },
+            { name: "Calle de los Estudiantes", coords: [7.1057698, -73.1238616], details: "Wi-Fi gratuito, zona estudiantil" },
+            { name: "Parque La Pera", coords: [7.0697182, -73.107578], details: "Wi-Fi gratuito, espacio comunitario" }
+        ];
+
+        // Lugares de coworking (de pago)
+        var coworkingSpots = [
+            { name: "Espacio Komún", coords: [7.1202968, -73.1160157], details: "Cra 29 #48-20, Sotomayor. Oficinas privadas, salas de juntas." },
+            { name: "Colorworking", coords: [7.1168556, -73.1088209], details: "Espacios creativos, café ilimitado, cabinas para videollamadas." },
+            { name: "Coworking Labs", coords: [7.11489, -73.10878], details: "Cl. 48 #28-40, Sotomayor. Internet de alta velocidad." },
+            { name: "Proworking Space", coords: [7.11501, -73.10889], details: "Cra 29 #48-11, Sotomayor. Salas de reuniones." },
+            { name: "Bucaramanga Business Center", coords: [7.11434, -73.10989], details: "Cra 30 #48-25. Salas de juntas, servicios premium." }
+        ];
+
+        // Añadir marcadores para Wi-Fi gratuito
+        wifiSpots.forEach(function(spot) {
+            L.marker(spot.coords, { icon: wifiIcon })
+                .addTo(map)
+                .bindPopup(`<b>${spot.name}</b><br>${spot.details}`);
+        });
+
+        // Añadir marcadores para coworking
+        coworkingSpots.forEach(function(spot) {
+            L.marker(spot.coords, { icon: coworkingIcon })
+                .addTo(map)
+                .bindPopup(`<b>${spot.name}</b><br>${spot.details}`);
+        });
+
+        // Añadir leyenda
+        var legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = `
+                <h4>Leyenda</h4>
+                <img src="https://img.icons8.com/color/48/000000/wifi.png" style="width:24px; vertical-align:middle;"> Wi-Fi Gratuito<br>
+                <img src="https://img.icons8.com/color/48/000000/office.png" style="width:24px; vertical-align:middle;"> Coworking (Pago)
+            `;
+            return div;
+        };
+        legend.addTo(map);
+    </script>
+</body>
+</html>
